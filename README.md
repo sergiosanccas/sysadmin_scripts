@@ -23,3 +23,17 @@ Las opciones son:
 ```
 ./hashman.sh -f <nameFile| directory> -o <outputh_path>
 ```
+
+##IpTables Config
+
+Script que creará una serie de reglas básicas para la configuración del firewall
+
+- Bloquea todas las peticiones por defecto
+- Acepta conexiones ssh desde la ip fija indicada al puerto indicado
+- Acepta conexiones a la bbdd desde la ip fija desde el puerto indicado
+- Crea la regla correspondiente para Fail2ban
+- Reglas para que los dockers tengan conectividad
+
+```
+./iptables_config.sh
+```

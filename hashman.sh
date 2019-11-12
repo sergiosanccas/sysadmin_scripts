@@ -108,6 +108,9 @@ if [ -n "$1" ]; then #Comprobamos que se pase un parametro
 		if [ -f $f ]; then #Comprobamos que sea un fichero
 			if [ -z $2 ]; then #No hay output, mostramos por pantalla
 				echo $(shasum $f)
+				filesize=$(stat -f%z $f)
+				echo $filesize
+				printf "Filesize:%s" $filesize
 			else
 				#createFile $nmeFile $1 #Creamos el fichero con la cabecera
 				echo $(shasum $f) >> $2 #Redirigir la salida al fichero
