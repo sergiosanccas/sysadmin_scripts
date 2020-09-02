@@ -13,8 +13,8 @@ iptables -A OUTPUT -o lo -j ACCEPT
 
 
 ip_fija=xxx.xx.x.x
-ssh_port=22
-bbdd_port=3306
+ssh_port=22445
+bbdd_port=3309
 penlace=eth0
 
 
@@ -36,6 +36,9 @@ iptables -A INPUT -p tcp -m multiport --dports $ssh_port -j f2b-sshd
 #ping desde ip fija
 
 iptables -A INPUT -s $ip_fija -p icmp -j ACCEPT
+iptables -A INPUT -p icmp --icmp-type 8 -s 0/0 -d $ip_fija -m state --state NEW,ESTABLISHED,RELATED -j ACCEPT
+
+iptables -A OUTPUT -p icmp --icmp-type 0 -s $ip_fija -d 0/0 -m state --state ESTABLISHED,RELATED -j ACCEPT
 
 #SSH para conexiones establecidas, de esta manera no las cerrara
 iptables -A INPUT -p tcp -m tcp --sport $ssh_port -m state --state ESTABLISHED -j ACCEPT
@@ -53,8 +56,14 @@ iptables -t nat -A POSTROUTING -s 172.17.0.0/24 -o $penlace -j MASQUERADE
 iptables -A INPUT -i $penlace -p tcp -s $ip_fija --dport $bbdd_port -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
 iptables -A OUTPUT -i $penlace -p tcp --sport $bbdd_port -m conntrack --ctstate ESTABLISHED -j ACCEPT
 
+# Registra todos los paquetes no aceptados
+iptables -A INPUT -j LOG --log-prefix "Descartado (INPUT):" --log-level debug
 
 #Si tenemos alguna regla fija, por ej de ssh las ponemos
+
+#Incoming malformed NULL packets
+iptables -A INPUT -p tcp --tcp-flags ALL NONE -j DROP
+
 
 #Eliminamos las conexiones
 
