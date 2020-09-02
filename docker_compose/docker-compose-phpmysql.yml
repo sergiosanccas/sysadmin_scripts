@@ -1,0 +1,36 @@
+version: '2'
+
+services:
+  # Database
+  db:
+    image: mysql:5.7
+    container_name: mysql_db
+    volumes:
+      - /home/scastell/docker_db:/var/lib/mysql
+    restart: always
+    environment:
+     MYSQL_ROOT_PASSWORD: Tendilla2020
+     #MYSQL_PORT: 3339
+     #MYSQL_DATABASE: my_database
+     #MYSQL_USER: user1
+     #MYSQL_PASSWORD: passw0r
+    ports:
+      # <Port exposed> : < MySQL Port running inside container>
+      - '3339:3306'
+    expose:
+      # Opens port 3306 on the container
+      - '3339'
+  # phpmyadmin
+  phpmyadmin:
+    #depends_on:
+     # - db
+     links:
+      - db:db
+     image: phpmyadmin/phpmyadmin
+     container_name: phpAdm
+     restart: always
+     ports:
+      - '8080:80' #Redirect 80 port to 8080
+     environment:
+      MYSQL_ROOT_PASSWORD: Tendilla2020 #Same password to mysql root user
+      PMA_PORT: 3339
